@@ -1,5 +1,6 @@
-import pandas as pd
+import math
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 def get_column_names(dataframe):
@@ -73,6 +74,9 @@ def plot_univariate_histogram(dataframe, column_name):
         return None
 
     plt.hist(dataframe[column_name])
+    plt.xlabel(column_name)
+    plt.ylabel("Frequency")
+    plt.title("Histogram of " + column_name)
 
 
 def plot_univariate_boxplot(dataframe, column_name):
@@ -95,7 +99,8 @@ def plot_all_univariate_histogram(dataframe):
     if dataframe is None:
         return None
 
-    for column_name in get_number_column_names(dataframe):
+    for column_name in dataframe.columns:
+        print(column_name)
         plot_univariate_histogram(dataframe, column_name)
         plt.show()
 
@@ -138,3 +143,110 @@ def plot_all_bivariate_scatterplot(dataframe):
             plt.show()
 
 
+def univariate_analysis_plots(data):
+    num_cols = len(data.columns)
+    num_plots_per_row = 5
+    num_rows = math.ceil(num_cols / num_plots_per_row)
+
+    fig, axes = plt.subplots(num_rows, num_plots_per_row, figsize=(18, num_rows * 4))
+    fig.subplots_adjust(hspace=0.5)
+
+    for i, column in enumerate(data.columns):
+        ax = axes[i // num_plots_per_row, i % num_plots_per_row] if num_rows > 1 else axes[i % num_plots_per_row]
+
+        if data[column].dtype == 'object':
+            sns.countplot(data[column], ax=ax)
+            ax.set_title(f'Countplot of {column}')
+            ax.set_xlabel('')
+            ax.set_ylabel('Count')
+            ax.tick_params(axis='x', rotation=45)
+        else:
+            sns.histplot(data[column], ax=ax, kde=True)
+            ax.set_title(f'Distribution of {column}')
+            ax.set_xlabel(column)
+            ax.set_ylabel('Frequency')
+
+    # Remove empty subplots
+    for i in range(num_cols, num_rows * num_plots_per_row):
+        fig.delaxes(axes.flatten()[i])
+
+    plt.tight_layout()
+    plt.show()
+
+
+def boxplot_per_column(data):
+    num_cols = len(data.columns)
+    num_plots_per_row = 5
+    num_rows = math.ceil(num_cols / num_plots_per_row)
+
+    fig, axes = plt.subplots(num_rows, num_plots_per_row, figsize=(18, num_rows * 4))
+    fig.subplots_adjust(hspace=0.5)
+
+    for i, column in enumerate(data.columns):
+        ax = axes[i // num_plots_per_row, i % num_plots_per_row] if num_rows > 1 else axes[i % num_plots_per_row]
+
+        sns.boxplot(y=data[column], ax=ax)
+        ax.set_title(f'Boxplot of {column}')
+        ax.set_ylabel(column)
+        ax.set_xlabel('')
+        ax.tick_params(axis='x', rotation=45)
+
+    # Remove empty subplots
+    for i in range(num_cols, num_rows * num_plots_per_row):
+        fig.delaxes(axes.flatten()[i])
+
+    plt.tight_layout()
+    plt.show()
+    return None
+
+
+def bivariate_analysis(data, target_column):
+    num_cols = len(data.columns)
+    num_plots_per_row = 5
+    num_rows = (num_cols - 1) // num_plots_per_row + 1
+
+    fig, axes = plt.subplots(num_rows, num_plots_per_row, figsize=(18, num_rows * 4))
+    fig.subplots_adjust(hspace=0.5)
+
+    target_data = data[target_column]
+    other_columns = [col for col in data.columns if col != target_column]
+
+    for i, column in enumerate(other_columns):
+        ax = axes[i // num_plots_per_row, i % num_plots_per_row] if num_rows > 1 else axes[i % num_plots_per_row]
+
+        if data[column].dtype == 'object':
+            sns.boxplot(x=data[column], y=target_data, ax=ax)
+            ax.set_title(f'{target_column} vs {column}')
+            ax.set_xlabel(column)
+            ax.set_ylabel(target_column)
+            ax.tick_params(axis='x', rotation=45)
+        else:
+            sns.scatterplot(x=data[column], y=target_data, ax=ax)
+            ax.set_title(f'{target_column} vs {column}')
+            ax.set_xlabel(column)
+            ax.set_ylabel(target_column)
+
+    # Remove empty subplots
+    for i in range(len(other_columns), num_rows * num_plots_per_row):
+        fig.delaxes(axes.flatten()[i])
+
+    plt.tight_layout()
+    plt.show()
+    return None
+
+
+def correlation_matrix(data):
+    # Calculate the correlation matrix
+    corr_matrix = data.corr()
+
+    # Set up the matplotlib figure
+    plt.figure(figsize=(10, 8))
+
+    # Draw the heatmap with the mask and correct aspect ratio
+    sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', fmt='.2f', square=True)
+    plt.title('Correlation Matrix')
+
+    # Show plot
+    plt.tight_layout()
+    plt.show()
+    return None
