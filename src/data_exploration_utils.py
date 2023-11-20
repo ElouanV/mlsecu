@@ -1,6 +1,8 @@
 import math
 import matplotlib.pyplot as plt
 import seaborn as sns
+from tqdm import tqdm
+import numpy as np
 
 
 def get_column_names(dataframe):
@@ -144,6 +146,11 @@ def plot_all_bivariate_scatterplot(dataframe):
 
 
 def univariate_analysis_plots(data):
+    """
+    Plot univariate analysis plots for all columns in the dataframe
+    :param data: input dataframe
+    :return: None
+    """
     num_cols = len(data.columns)
     num_plots_per_row = 5
     num_rows = math.ceil(num_cols / num_plots_per_row)
@@ -151,7 +158,7 @@ def univariate_analysis_plots(data):
     fig, axes = plt.subplots(num_rows, num_plots_per_row, figsize=(18, num_rows * 4))
     fig.subplots_adjust(hspace=0.5)
 
-    for i, column in enumerate(data.columns):
+    for i, column in tqdm(enumerate(data.columns)):
         ax = axes[i // num_plots_per_row, i % num_plots_per_row] if num_rows > 1 else axes[i % num_plots_per_row]
 
         if data[column].dtype == 'object':
@@ -175,6 +182,11 @@ def univariate_analysis_plots(data):
 
 
 def boxplot_per_column(data):
+    """
+    Plot boxplot for each column in the dataframe
+    :param data: intput dataframe
+    :return: None
+    """
     num_cols = len(data.columns)
     num_plots_per_row = 5
     num_rows = math.ceil(num_cols / num_plots_per_row)
@@ -201,6 +213,12 @@ def boxplot_per_column(data):
 
 
 def bivariate_analysis(data, target_column):
+    """
+    Plot bivariate analysis plots for all columns in the dataframe
+    :param data: input dataframe
+    :param target_column: target column label
+    :return: None
+    """
     num_cols = len(data.columns)
     num_plots_per_row = 5
     num_rows = (num_cols - 1) // num_plots_per_row + 1
@@ -236,14 +254,21 @@ def bivariate_analysis(data, target_column):
 
 
 def correlation_matrix(data):
-    # Calculate the correlation matrix
-    corr_matrix = data.corr()
+    """
+    Plot the correlation matrix of the dataframe
+    :param data: input dataframe
+    :return: None
+    """
+    # Calculate the correlation matrix on the columns that are numeric
+    numeric_cols = data.select_dtypes(include=['number']).columns
+    numeric_matrix = data[numeric_cols]
+    corr_matrix = numeric_matrix.corr()
 
     # Set up the matplotlib figure
     plt.figure(figsize=(10, 8))
 
     # Draw the heatmap with the mask and correct aspect ratio
-    sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', fmt='.2f', square=True)
+    sns.heatmap(corr_matrix, annot=False, cmap='coolwarm', fmt='.2f', square=True)
     plt.title('Correlation Matrix')
 
     # Show plot
