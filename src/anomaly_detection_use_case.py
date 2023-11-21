@@ -1,4 +1,4 @@
-from mlsecu import data_exploration_utils, data_preparation_utils
+from src import data_exploration_utils, data_preparation_utils
 from sklearn.ensemble import IsolationForest
 from sklearn.neighbors import LocalOutlierFactor
 import numpy as np
