@@ -259,10 +259,8 @@ def correlation_matrix(data):
     :param data: input dataframe
     :return: None
     """
-    # Calculate the correlation matrix on the columns that are numeric
-    numeric_cols = data.select_dtypes(include=['number']).columns
-    numeric_matrix = data[numeric_cols]
-    corr_matrix = numeric_matrix.corr()
+    # Compute the correlation matrix
+    corr_matrix = data.corr()
 
     # Set up the matplotlib figure
     plt.figure(figsize=(10, 8))
