@@ -8,3 +8,4 @@ scikit-learn
 torch
 tensorflow
 tensorboard
+xgboost

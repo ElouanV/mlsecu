@@ -266,10 +266,9 @@ def correlation_matrix(data):
     plt.figure(figsize=(10, 8))
 
     # Draw the heatmap with the mask and correct aspect ratio
-    sns.heatmap(corr_matrix, annot=False, cmap='coolwarm', fmt='.2f', square=True)
+    sns.heatmap(corr_matrix, cmap='coolwarm', fmt='.2f', square=True)
     plt.title('Correlation Matrix')
 
     # Show plot
-    plt.tight_layout()
     plt.show()
     return None
